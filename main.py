@@ -4,7 +4,7 @@ import os
 import google.generativeai as genai
 from dotenv import load_dotenv
 from langchain import LLMChain
-from langchain.chains import SimpleQAWithRetrievalChain
+from langchain.chains import ConversationalRetrievalChain
 from langchain.retrievers import Neo4jRetriever
 from langchain.memory import SimpleMemory
 from langchain.graphs.neo4j_graph import Neo4jGraph
@@ -15,7 +15,7 @@ load_dotenv()
 NEO4J_URI = os.getenv("NEO4J_URI")
 NEO4J_USER = os.getenv("NEO4J_USER")
 NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD")
-GOOGLE_GEMINI_API_KEY = os.getenv("GOOGLE_GEMINI_API_KEY")
+GOOGLE_GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Initialize Neo4j driver
 driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
@@ -48,7 +48,7 @@ model = genai.GenerativeModel(
 # Initialize Langchain
 retriever = Neo4jRetriever(driver, match_query="MATCH (n) WHERE n.name CONTAINS $query RETURN n")
 
-qa_chain = SimpleQAWithRetrievalChain.from_chain_and_retriever(
+qa_chain = ConversationalRetrievalChain.from_chain_and_retriever(
     llm=model,
     retriever=retriever,
     question_key="text",
