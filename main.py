@@ -5,7 +5,8 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 from langchain.graphs import Neo4jGraph
 from langchain.chains import GraphCypherQAChain
-from langchain.llms import GoogleGenerativeAI
+from langchain.llms.base import LLM
+from typing import Any, List, Mapping, Optional
 
 # Load environment variables
 load_dotenv()
@@ -21,8 +22,28 @@ driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
 # Initialize Google Gemini API
 genai.configure(api_key=GOOGLE_GEMINI_API_KEY)
 
-# Initialize LangChain's GoogleGenerativeAI wrapper
-llm = GoogleGenerativeAI(model="gemini-1.5-pro", temperature=1.0)
+# Custom LLM class for Google Generative AI
+class GoogleGenerativeAI(LLM):
+    model_name: str
+    temperature: float
+    model: Any
+
+    def __init__(self, model_name: str, temperature: float):
+        super().__init__()
+        self.model_name = model_name
+        self.temperature = temperature
+        self.model = genai.GenerativeModel(model_name=self.model_name)
+
+    def _call(self, prompt: str, stop: Optional[List[str]] = None) -> str:
+        response = self.model.generate_content(prompt)
+        return response.text
+
+    @property
+    def _llm_type(self) -> str:
+        return "google_generative_ai"
+
+# Initialize custom LLM
+llm = GoogleGenerativeAI(model_name="gemini-1.5-pro", temperature=1.0)
 
 # Initialize Langchain with Neo4jGraph
 try:
