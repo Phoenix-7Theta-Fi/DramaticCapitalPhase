@@ -2,10 +2,12 @@ import streamlit as st
 from neo4j import GraphDatabase
 import os
 import google.generativeai as genai
+from dotenv import load_dotenv
 from langchain import LLMChain
 from langchain.chains import SimpleQAWithRetrievalChain
 from langchain.retrievers import Neo4jRetriever
-from dotenv import load_dotenv
+from langchain.memory import SimpleMemory
+from langchain.graphs.neo4j_graph import Neo4jGraph
 
 # Load environment variables
 load_dotenv()

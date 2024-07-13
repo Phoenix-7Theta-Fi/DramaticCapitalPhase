@@ -1,5 +1,7 @@
-streamlit==1.28.0
-neo4j==5.13.0
-langchain==0.0.350
-google-generativeai==0.3.1
-python-dotenv==1.0.0
+streamlit
+neo4j
+langchain
+google-generativeai
+python-dotenv
+langchain-community
+langchain-text-splitters
