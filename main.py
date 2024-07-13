@@ -5,7 +5,6 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 from langchain import LLMChain
 from langchain.chains import ConversationalRetrievalChain
-from langchain.retrievers import Neo4jRetriever
 from langchain.memory import SimpleMemory
 from langchain.graphs.neo4j_graph import Neo4jGraph
 
@@ -45,12 +44,12 @@ model = genai.GenerativeModel(
     You will simultaneously be updating the required and appropriate fields in Neo4j database based on the info gathered in the chat with the user.""",
 )
 
-# Initialize Langchain
-retriever = Neo4jRetriever(driver, match_query="MATCH (n) WHERE n.name CONTAINS $query RETURN n")
+# Initialize Langchain with Neo4jGraph
+neo4j_graph = Neo4jGraph(driver=driver, database="neo4j")
 
 qa_chain = ConversationalRetrievalChain.from_chain_and_retriever(
     llm=model,
-    retriever=retriever,
+    retriever=neo4j_graph,
     question_key="text",
     input_key="user_info",
     output_key="response"
